@@ -1,0 +1,28 @@
+#-----------------------------------------------------------------------------
+# Configuration file for the Seek thermal camera library
+#
+# © Copyright 2016 MedTec
+#
+# This file can be passed to a CMake FIND_PACKAGE call with the following syntax:
+#
+# FIND_PACKAGE(SeekCameraLib <REQUIRED|QUIET> <NO_MODULE>)
+#   If NO_MODULE is included, set the variable SeekCameraLib_DIR:PATH=<SomePath>
+#
+# Or you can use the following variables to configure your CMake project:
+#  SeekCameraLib_INCLUDE_DIRS - include directories for Plus headers
+#  SeekCameraLib_LIBRARIES - list of CMake targets produced by this build of Plus
+#-----------------------------------------------------------------------------
+
+SET(OpenCV_DIR @OpenCV_DIR@)
+FIND_PACKAGE(OpenCV REQUIRED NO_MODULE)
+
+SET(CMAKE_MODULE_PATH @CMAKE_MODULE_PATH@ ${CMAKE_MODULE_PATH})
+SET(LibUSB_ROOT_DIR @LibUSB_ROOT_DIR@)
+FIND_PACKAGE(LibUSB REQUIRED)
+
+# set the targets file (relative for install location)
+INCLUDE(@SeekCameraLib_TARGETS_FILE@)
+
+# Tell the user project where to find our headers and libraries
+SET(SeekCameraLib_INCLUDE_DIRS "@SeekCameraLib_INCLUDE_DIRS@")
+SET(SeekCameraLib_LIBRARIES "@SeekCameraLib_LIBRARIES@")
