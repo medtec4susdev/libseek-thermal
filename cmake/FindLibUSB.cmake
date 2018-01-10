@@ -36,6 +36,7 @@ if(PKGCONFIG_LIBUSB_FOUND)
     endif ()
     mark_as_advanced(${ibase}_LIBRARY)
   endforeach()
+  LIST(REMOVE_DUPLICATES usb_LIBRARY)
 else ()
   find_file(LibUSB_HEADER_FILE
     NAMES
@@ -124,7 +125,7 @@ if(LibUSB_FOUND)
   check_library_exists("${usb_LIBRARY}" libusb_get_device_list "" LibUSB_VERSION_1.0)
 endif()
 
-if(usb_LIBRARY MATCHES ${CMAKE_STATIC_LIBRARY_SUFFIC})
+if(${usb_LIBRARY} MATCHES ${CMAKE_STATIC_LIBRARY_SUFFIX})
   ADD_LIBRARY(LibUSB STATIC IMPORTED)
 else()
   ADD_LIBRARY(LibUSB SHARED IMPORTED)
