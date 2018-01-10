@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Configuration file for the Seek thermal camera library
 #
-# © Copyright 2016 
+# © Copyright 2016 MedTec
 #
 # This file can be passed to a CMake FIND_PACKAGE call with the following syntax:
 #
@@ -15,6 +15,10 @@
 
 SET(OpenCV_DIR @OpenCV_DIR@)
 FIND_PACKAGE(OpenCV REQUIRED NO_MODULE)
+
+SET(CMAKE_MODULE_PATH @CMAKE_MODULE_PATH@ ${CMAKE_MODULE_PATH})
+SET(LibUSB_ROOT_DIR @LibUSB_ROOT_DIR@)
+FIND_PACKAGE(LibUSB REQUIRED)
 
 # set the targets file (relative for install location)
 INCLUDE(${SeekCameraLib_TARGETS_FILE})

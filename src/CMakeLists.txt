@@ -63,7 +63,8 @@ export(TARGETS
 
 SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
 # Configure the dependency config file so downstream projects can use us from CMake
-CONFIGURE_FILE(
+CONFIGURE_FILE( 
   ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/SeekCameraLibConfig.cmake
+  ${CMAKE_BINARY_DIR}/SeekCameraLibConfig.cmake
+  @ONLY
   )

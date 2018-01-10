@@ -12,12 +12,22 @@ set (CMAKE_CXX_STANDARD_REQUIRED True)
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+IF(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+ENDIF()
+IF(NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+ENDIF()
+IF(NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+ENDIF()
+
 if (WITH_DEBUG_VERBOSITY)
-    add_definitions(-DSEEK_DEBUG)
+  add_definitions(-DSEEK_DEBUG)
 endif ()
 
 if (NOT MSVC)
-message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+  message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 endif ()
 
 find_package (LibUSB REQUIRED)
@@ -26,5 +36,5 @@ find_package (OpenCV REQUIRED NO_MODULE)
 add_subdirectory (src)
 
 if (BUILD_EXAMPLES)
-    add_subdirectory (examples)
+  add_subdirectory (examples)
 endif ()
