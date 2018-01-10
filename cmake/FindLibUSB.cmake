@@ -10,7 +10,7 @@
 #  LibUSB_FOUND:        true if LibUSB was found
 #  LibUSB_HEADER_FILE:  the location of the C header file
 #  LibUSB_INCLUDE_DIRS: the directory that contains the include file
-#  LibUSB_LIBRARIES:    the library
+#  LibUSB_LIBRARIES:    the CMake targets
 
 include(CheckLibraryExists)
 include(CheckIncludeFile)
@@ -32,7 +32,7 @@ if(PKGCONFIG_LIBUSB_FOUND)
       PATHS ${PKGCONFIG_LIBUSB_LIBRARY_DIRS}
       )
     if(${ibase}_LIBRARY)
-      list(APPEND LibUSB_LIBRARIES ${${ibase}_LIBRARY})
+      list(APPEND usb_LIBRARY ${${ibase}_LIBRARY})
     endif ()
     mark_as_advanced(${ibase}_LIBRARY)
   endforeach()
@@ -81,7 +81,7 @@ else ()
     endif()
   endif()
 
-  find_library(usb_STATIC_LIBRARY
+  find_library(usb_LIBRARY
     NAMES
       usb-1.0 libusb usb libusb-1.0
     PATHS
@@ -91,9 +91,9 @@ else ()
     PATH_SUFFIXES
       ${LibUSB_STATIC_LIBRARY_PATH_SUFFIX}
     )
-  mark_as_advanced(usb_STATIC_LIBRARY)
+  mark_as_advanced(usb_LIBRARY)
 
-  find_file(usb_LIBRARY
+  find_file(usb_SHARED_LIBRARY
     NAMES
       usb-1.0${CMAKE_SHARED_LIBRARY_SUFFIX} 
       libusb${CMAKE_SHARED_LIBRARY_SUFFIX} 
@@ -106,7 +106,7 @@ else ()
     PATH_SUFFIXES
       ${LibUSB_LIBRARY_PATH_SUFFIX}
     )
-    mark_as_advanced(usb_LIBRARY)
+    mark_as_advanced(usb_SHARED_LIBRARY)
 endif()
 
 SET(LibUSB_LIBRARIES LibUSB)
@@ -116,16 +116,22 @@ SET(LibUSB_LIBRARIES LibUSB)
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibUSB DEFAULT_MSG
   usb_LIBRARY
-  usb_STATIC_LIBRARY
   LibUSB_INCLUDE_DIRS
  )
 
 if(LibUSB_FOUND)
-  check_library_exists("${usb_STATIC_LIBRARY}" usb_open "" LibUSB_FOUND)
+  check_library_exists("${usb_LIBRARY}" usb_open "" LibUSB_FOUND)
   check_library_exists("${usb_LIBRARY}" libusb_get_device_list "" LibUSB_VERSION_1.0)
 endif()
 
-ADD_LIBRARY(LibUSB SHARED IMPORTED)
-SET_PROPERTY(TARGET LibUSB PROPERTY IMPORTED_IMPLIB ${usb_STATIC_LIBRARY})
+if(usb_LIBRARY MATCHES ${CMAKE_STATIC_LIBRARY_SUFFIC})
+  ADD_LIBRARY(LibUSB STATIC IMPORTED)
+else()
+  ADD_LIBRARY(LibUSB SHARED IMPORTED)
+endif()
+
+if(MSVC)
+  SET_PROPERTY(TARGET LibUSB PROPERTY IMPORTED_IMPLIB ${usb_STATIC_LIBRARY})
+endif()
 SET_PROPERTY(TARGET LibUSB PROPERTY IMPORTED_LOCATION ${usb_LIBRARY})
 SET_PROPERTY(TARGET LibUSB PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${LibUSB_INCLUDE_DIRS})
