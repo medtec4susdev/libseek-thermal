@@ -5,7 +5,10 @@
 
 #include "SeekThermal.h"
 #include "SeekLogging.h"
+
+#if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 #include <endian.h>
+#endif
 
 using namespace LibSeek;
 
@@ -22,7 +25,7 @@ SeekThermal::SeekThermal(std::string ffc_filename) :
 bool SeekThermal::init_cam()
 {
     {
-        std::vector<uint8_t> data = { 0x01 };
+        vector<uint8_t> data = { 0x01 };
         if (!m_dev.request_set(DeviceCommand::TARGET_PLATFORM, data)) {
             /* deinit and retry if cam was not properly closed */
             close();
@@ -31,89 +34,89 @@ bool SeekThermal::init_cam()
         }
     }
     {
-        std::vector<uint8_t> data = { 0x00, 0x00 };
+        vector<uint8_t> data = { 0x00, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_OPERATION_MODE, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(4);
+        vector<uint8_t> data(4);
         if (!m_dev.request_get(DeviceCommand::GET_FIRMWARE_INFO, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data(12);
+        vector<uint8_t> data(12);
         if (!m_dev.request_get(DeviceCommand::READ_CHIP_ID, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x20, 0x00, 0x30, 0x00, 0x00, 0x00 };
+        vector<uint8_t> data = { 0x20, 0x00, 0x30, 0x00, 0x00, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_FACTORY_SETTINGS_FEATURES, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(64);
+        vector<uint8_t> data(64);
         if (!m_dev.request_get(DeviceCommand::GET_FACTORY_SETTINGS, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x20, 0x00, 0x50, 0x00, 0x00, 0x00 };
+        vector<uint8_t> data = { 0x20, 0x00, 0x50, 0x00, 0x00, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_FACTORY_SETTINGS_FEATURES, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(64);
+        vector<uint8_t> data(64);
         if (!m_dev.request_get(DeviceCommand::GET_FACTORY_SETTINGS, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x0c, 0x00, 0x70, 0x00, 0x00, 0x00 };
+        vector<uint8_t> data = { 0x0c, 0x00, 0x70, 0x00, 0x00, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_FACTORY_SETTINGS_FEATURES, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(24);
+        vector<uint8_t> data(24);
         if (!m_dev.request_get(DeviceCommand::GET_FACTORY_SETTINGS, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x06, 0x00, 0x08, 0x00, 0x00, 0x00 };
+        vector<uint8_t> data = { 0x06, 0x00, 0x08, 0x00, 0x00, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_FACTORY_SETTINGS_FEATURES, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(12);
+        vector<uint8_t> data(12);
         if (!m_dev.request_get(DeviceCommand::GET_FACTORY_SETTINGS, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x08, 0x00 };
+        vector<uint8_t> data = { 0x08, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_IMAGE_PROCESSING_MODE, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(2);
+        vector<uint8_t> data(2);
         if (!m_dev.request_get(DeviceCommand::GET_OPERATION_MODE, data))
             return false;
         print_usb_data(data);
     }
     {
-        std::vector<uint8_t> data = { 0x08, 0x00 };
+        vector<uint8_t> data = { 0x08, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_IMAGE_PROCESSING_MODE, data))
             return false;
     }
     {
-        std::vector<uint8_t> data = { 0x01, 0x00 };
+        vector<uint8_t> data = { 0x01, 0x00 };
         if (!m_dev.request_set(DeviceCommand::SET_OPERATION_MODE, data))
             return false;
     }
     {
-        std::vector<uint8_t> data(2);
+        vector<uint8_t> data(2);
         if (!m_dev.request_get(DeviceCommand::GET_OPERATION_MODE, data))
             return false;
         print_usb_data(data);

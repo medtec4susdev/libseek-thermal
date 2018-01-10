@@ -1,40 +1,61 @@
-set (HEADERS
-    SeekCam.h
-    SeekDevice.h
-    seek.h
-    SeekLogging.h
-    SeekThermal.h
-    SeekThermalPro.h
-)
+# Developed by MACBIOIDI-ULPGC & IACTEC-IAC group
+PROJECT(SeekCameraLib)
 
-set (SOURCES
-    SeekCam.cpp
-    SeekDevice.cpp
-    SeekThermal.cpp
-    SeekThermalPro.cpp
-)
+SET(${PROJECT_NAME}_INCLUDE_DIRS
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
-set (SRC ${SOURCES} ${HEADERS})
+SET(${PROJECT_NAME}_SRCS
+  SeekCam.cpp
+  SeekDevice.cpp
+  SeekThermal.cpp
+  SeekThermalPro.cpp
+ )
 
-include_directories (
-    /usr/include/libusb-1.0
-    ${OpenCV_INCLUDE_DIRS}
-)
+SET(${PROJECT_NAME}_HDRS
+  seek.h
+  SeekCam.h
+  SeekDevice.h
+  SeekLogging.h
+  SeekThermal.h
+  SeekThermalPro.h
+  )
 
-add_library (seek_static STATIC ${SRC})
-add_library (seek SHARED ${SRC})
+# create library
+SET(LIB_TYPE STATIC)
+IF(BUILD_SHARED_LIBS)
+  SET(LIB_TYPE SHARED)
+ENDIF()
+ADD_LIBRARY(${PROJECT_NAME} ${LIB_TYPE} ${SeekCameraLib_SRCS} ${SeekCameraLib_HDRS})
 
-target_link_libraries (seek
-    ${OpenCV_LIBS}
-    -lusb-1.0
-)
+# add include directories in the build
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-# install library target and header files
-install (TARGETS
-    seek
-    DESTINATION "lib"
-)
+# link libraries for new library
+target_link_libraries(${PROJECT_NAME} PUBLIC opencv_core opencv_imgcodecs LibUSB)
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} PUBLIC wsock32 ws2_32)
+endif()
 
-install (FILES ${HEADERS}
-    DESTINATION "include/seek"
-)
+INSTALL(TARGETS ${PROJECT_NAME} EXPORT SeekCameraLib 
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION share
+  )
+INSTALL(FILES ${${PROJECT_NAME}_HDRS}
+  DESTINATION include
+  )
+
+# Export the build configuration so that targets are made available
+export(TARGETS
+  SeekCameraLib
+  FILE "${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake"
+  )
+
+SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
+# Configure the dependency config file so downstream projects can use us from CMake
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/SeekCameraLibConfig.cmake
+  )
