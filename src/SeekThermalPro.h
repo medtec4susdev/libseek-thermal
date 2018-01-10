@@ -6,6 +6,8 @@
 #ifndef SEEK_THERMAL_PRO_H
 #define SEEK_THERMAL_PRO_H
 
+#include "SeekCameraLibExport.h"
+
 #include <opencv2/opencv.hpp>
 #include "SeekCam.h"
 
@@ -17,7 +19,7 @@
 
 namespace LibSeek {
 
-class SeekThermalPro: public SeekCam
+class SeekCameraLibExport SeekThermalPro: public SeekCam
 {
 public:
     SeekThermalPro();

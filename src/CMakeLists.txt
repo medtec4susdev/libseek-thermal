@@ -20,6 +20,7 @@ SET(${PROJECT_NAME}_HDRS
   SeekLogging.h
   SeekThermal.h
   SeekThermalPro.h
+  SeekCameraLibExport.h
   )
 
 # create library
@@ -36,6 +37,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURR
 target_link_libraries(${PROJECT_NAME} PUBLIC opencv_core opencv_imgcodecs LibUSB)
 if(WIN32)
   target_link_libraries(${PROJECT_NAME} PUBLIC wsock32 ws2_32)
+endif()
+
+if (BUILD_SHARED_LIBS)
+  # Enable generation of .lib file in MSVC when compiling shared libraries
+  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_EXPORTS)
+else()
+  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_STATIC)
 endif()
 
 INSTALL(TARGETS ${PROJECT_NAME} EXPORT SeekCameraLib 

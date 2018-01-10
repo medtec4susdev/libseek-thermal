@@ -6,6 +6,8 @@
 #ifndef SEEK_DEVICE_H
 #define SEEK_DEVICE_H
 
+#include "SeekCameraLibExport.h"
+
 #include <vector>
 #include <cstdint>
 #include <libusb.h>
@@ -14,7 +16,7 @@ using namespace std;
 
 namespace LibSeek {
 
-struct DeviceCommand {
+struct SeekCameraLibExport DeviceCommand {
     enum Enum {
      BEGIN_MEMORY_WRITE              = 82,
      COMPLETE_MEMORY_WRITE           = 81,
@@ -56,7 +58,7 @@ struct DeviceCommand {
     };
 };
 
-class SeekDevice
+class SeekCameraLibExport SeekDevice
 {
 public:
     /*

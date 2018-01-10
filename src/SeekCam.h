@@ -6,12 +6,14 @@
 #ifndef SEEK_CAM_H
 #define SEEK_CAM_H
 
+#include "SeekCameraLibExport.h"
+
 #include "SeekDevice.h"
 #include <opencv2/opencv.hpp>
 
 namespace LibSeek {
 
-class SeekCam
+class SeekCameraLibExport SeekCam
 {
 public:
     /*
