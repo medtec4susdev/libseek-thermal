@@ -46,11 +46,11 @@ else ()
       $ENV{ProgramFiles}/LibUSB-Win32
       $ENV{LibUSB_ROOT_DIR}
     PATH_SUFFIXES
-      include
       include/libusb-1.0
   )
   mark_as_advanced(LibUSB_HEADER_FILE)
   get_filename_component(LibUSB_INCLUDE_DIRS "${LibUSB_HEADER_FILE}" PATH)
+  get_filename_component(LibUSB_INCLUDE_DIRS "${LibUSB_INCLUDE_DIRS}" PATH)
 
   if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     # LibUSB-Win32 binary distribution contains several libs.
