@@ -8,6 +8,7 @@
 
 #if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 #include <endian.h>
+#include <arpa/inet.h>
 #endif
 
 using namespace LibSeek;
