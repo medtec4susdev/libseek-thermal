@@ -21,7 +21,7 @@ SET(LibUSB_ROOT_DIR @LibUSB_ROOT_DIR@)
 FIND_PACKAGE(LibUSB REQUIRED)
 
 # set the targets file (relative for install location)
-INCLUDE(${SeekCameraLib_TARGETS_FILE})
+INCLUDE(@SeekCameraLib_TARGETS_FILE@)
 
 # Tell the user project where to find our headers and libraries
 SET(SeekCameraLib_INCLUDE_DIRS "@SeekCameraLib_INCLUDE_DIRS@")
