@@ -5,11 +5,7 @@
 
 #include "SeekThermalPro.h"
 #include "SeekLogging.h"
-
-#if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 #include <endian.h>
-#include <arpa/inet.h>
-#endif
 
 using namespace LibSeek;
 
@@ -101,7 +97,7 @@ bool SeekThermalPro::init_cam()
 
     for (addr=0; addr<2560; addr+=32) {
         {
-            addrle = htons(addr); /* mind endianness */
+            addrle = htole16(addr); /* mind endianness */
             vector<uint8_t> data = { 0x20, 0x00, addrle_p[0], addrle_p[1], 0x00, 0x00 };
             if (!m_dev.request_set(DeviceCommand::SET_FACTORY_SETTINGS_FEATURES, data))
                 return false;

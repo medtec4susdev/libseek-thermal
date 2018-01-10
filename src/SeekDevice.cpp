@@ -5,11 +5,8 @@
 
 #include "SeekDevice.h"
 #include "SeekLogging.h"
+#include <endian.h>
 #include <stdio.h>
-
-#if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
-#include <arpa/inet.h>
-#endif
 
 using namespace LibSeek;
 
@@ -218,6 +215,6 @@ void SeekDevice::correct_endianness(uint16_t* buffer, size_t size)
     size_t i;
 
     for (i=0; i<size; i++) {
-        buffer[i] = ntohs(buffer[i]);
+        buffer[i] = le16toh(buffer[i]);
     }
 }

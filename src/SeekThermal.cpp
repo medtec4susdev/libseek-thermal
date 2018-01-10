@@ -5,10 +5,7 @@
 
 #include "SeekThermal.h"
 #include "SeekLogging.h"
-
-#if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 #include <endian.h>
-#endif
 
 using namespace LibSeek;
 
