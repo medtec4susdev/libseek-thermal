@@ -4,99 +4,68 @@
  */
 #include <opencv2/highgui/highgui.hpp>
 #include "seek.h"
-#include "boost/program_options.hpp"
 #include <iostream>
+#include "cxxopts.hpp" // Parsing command line options
 
-namespace po = boost::program_options;
-
-static po::options_description get_description()
+cxxopts::Options generate_description(std::string program_name)
 {
-    po::options_description description;
+    // Get file name from path
+    const size_t last_slash_idx = program_name.find_last_of("\\/");
+    if (std::string::npos != last_slash_idx)
+        program_name.erase(0, last_slash_idx + 1);
 
-    description.add_options()
-        ("help,h", "Show this help")
-        ("cam,c", po::value<std::string>()->default_value(std::string("seekpro")), "Camera type: choises: seekpro|seek"
-                                                                " -> default is 'seekpro'")
-        ("smoothing,s", po::value<int>()->default_value(100), "Number of images to average before creating an output image")
-        ("outfile", po::value<std::string>()->required(), "Name of the output file");
-
-    return description;
-}
-
-static po::variables_map parse_options(int argc, char** argv)
-{
-    po::positional_options_description positional_description;
-    positional_description.add("outfile", -1);
-    po::variables_map variables_map;
-
-    auto description = get_description();
-    po::store(po::command_line_parser(argc, argv)
-                    .options(description)
-                    .positional(positional_description)
-                    .run(), variables_map);
-
-    if (variables_map.count("help") > 0) {
-        return variables_map;
-    }
-
-    po::notify(variables_map);
-    return variables_map;
-}
-
-static void print_help(const char* program_name)
-{
-    std::cout << "Usage: " << program_name << " [options] outputfilename" << std::endl;
-    std::cout << get_description() << std::endl;
-}
-
-static bool process_command_line_options(int argc, char **argv, po::variables_map& options)
-{
-    try
-    {
-        options = parse_options(argc, argv);
-    }
-    catch (po::error &e)
-    {
-        std::cerr << "ERROR: " << e.what() << std::endl;
-        print_help(argv[0]);
-        return false;
-    }
-
-    if (options.find("help") != options.end())
-    {
-        print_help(argv[0]);
-        return false;
-    }
-
-    return true;
+    // Options
+    cxxopts::Options options(program_name, "");
+    options.add_options()
+      ("h,help",      "Show this help")
+      ("c,cam",       "File nameCamera type: [seek|seekpro]", cxxopts::value<std::string>()->default_value("seekpro"))
+      ("s,smoothing", "Number of images to average before creating an output image", cxxopts::value<int>()->default_value("100"))
+      ("o,outfile",   "Name of the output file", cxxopts::value<std::string>()->default_value("ffield_output"))
+      ;
+    return options;
 }
 
 int main(int argc, char** argv)
 {
-    int i;
-    cv::Mat frame_u16, frame, avg_frame;
+    // Options
+    cxxopts::Options options = generate_description(argv[0]);
+    bool help;
+    int smoothing;
+    std::string outfile;
+    std::string cam;
+
+    // Seek
+    //cv::Mat frame_u16, frame, avg_frame;
     LibSeek::SeekThermalPro seekpro;
     LibSeek::SeekThermal seek;
     LibSeek::SeekCam* cam;
-    po::variables_map options;
 
-    if (!process_command_line_options(argc, argv, options))
+    try
+    {
+        auto result = options.parse(argc, argv);
+        smoothing = result["smoothing"].as<int>();
+        outfile   = result["outfile"].as<std::string>();
+        help      = result["help"].as<bool>();
+        cam       = (result["cam"].as<std::string>() == "seekpro") ? &seekpro : &seek;
+    }
+    catch (cxxopts::OptionException &e)
+    {
+        std::cerr << "ERROR: " << e.what() << std::endl;
+        std::cout << options.help() << std::endl;
         return -1;
+    }
 
-    int smoothing = options["smoothing"].as<int>();
-    std::string outfile = options["outfile"].as<std::string>();
-
-    if (options["cam"].as<std::string>() == "seekpro")
-        cam = &seekpro;
-    else
-        cam = &seek;
+    if (help) {
+        std::cout << options.help() << std::endl;
+        return 0;
+    }
 
     if (!cam->open()) {
         std::cout << "failed to open seek cam" << std::endl;
         return -1;
     }
 
-    for (i=0; i<smoothing; i++) {
+    for (int i=0; i<smoothing; i++) {
 
         if (!cam->grab()) {
             std::cout << "no more LWIR img" << std::endl;
