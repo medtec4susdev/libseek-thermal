@@ -9,7 +9,7 @@
 #include <string>
 #include <signal.h>
 #include <memory>
-#include "args.h"
+#include "cxxopts.h"
 
 using namespace cv;
 using namespace LibSeek;
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     args::ValueFlag<float> _scale(parser, "scaling", "Output Scaling - multiple of original image", {'s', "scale"});
     args::ValueFlag<int> _colormap(parser, "colormap", "Color Map - number between 0 and 12", {'c', "colormap"});
     args::ValueFlag<int> _rotate(parser, "rotate", "Rotation - 0, 90, 180 or 270 (default) degrees", {'r', "rotate"});
-    args::ValueFlag<std::string> _camtype(parser, "camtype", "Seek Thermal Camera Model - seek or seekpro", {'t', "camtype"});
+    args::ValueFlag<std::string> _camtype(parser, "cam", "Seek Thermal Camera Model - seek or seekpro", {'c', "cam"});
 
     // Parse arguments
     try

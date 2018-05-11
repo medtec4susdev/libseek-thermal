@@ -2,7 +2,7 @@
 # This module will find libusb as published by
 #  http://libusb.sf.net and
 #  http://libusb-win32.sf.net
-# 
+#
 # It will use PkgConfig if present and supported, else search
 # it on its own. If the LibUSB_ROOT_DIR environment variable
 # is defined, it will be used as base path.
@@ -57,20 +57,20 @@ else ()
     # Use the lib that got compiled with the same compiler.
     if(MSVC)
       if(${CMAKE_GENERATOR} MATCHES "Win64")
-        set(LibUSB_STATIC_LIBRARY_PATH_SUFFIX 
-          MS64/static 
+        set(LibUSB_STATIC_LIBRARY_PATH_SUFFIX
+          MS64/static
           lib/x64
           )
-        set(LibUSB_LIBRARY_PATH_SUFFIX 
+        set(LibUSB_LIBRARY_PATH_SUFFIX
           MS64/dll
           bin/x64
           )
       else()
-        set(LibUSB_STATIC_LIBRARY_PATH_SUFFIX 
+        set(LibUSB_STATIC_LIBRARY_PATH_SUFFIX
           MS32/static
           lib/Win32
           )
-        set(LibUSB_LIBRARY_PATH_SUFFIX 
+        set(LibUSB_LIBRARY_PATH_SUFFIX
           MS32/dll
           bin/Win32
           )
@@ -96,9 +96,9 @@ else ()
 
   find_file(usb_SHARED_LIBRARY
     NAMES
-      usb-1.0${CMAKE_SHARED_LIBRARY_SUFFIX} 
-      libusb${CMAKE_SHARED_LIBRARY_SUFFIX} 
-      usb${CMAKE_SHARED_LIBRARY_SUFFIX} 
+      usb-1.0${CMAKE_SHARED_LIBRARY_SUFFIX}
+      libusb${CMAKE_SHARED_LIBRARY_SUFFIX}
+      usb${CMAKE_SHARED_LIBRARY_SUFFIX}
       libusb-1.0${CMAKE_SHARED_LIBRARY_SUFFIX}
     PATHS
       $ENV{ProgramFiles}/LibUSB-Win32

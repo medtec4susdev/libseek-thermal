@@ -5,66 +5,53 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "seek.h"
 #include <iostream>
-#include "cxxopts.hpp" // Parsing command line options
-
-cxxopts::Options generate_description(std::string program_name)
-{
-    // Get file name from path
-    const size_t last_slash_idx = program_name.find_last_of("\\/");
-    if (std::string::npos != last_slash_idx)
-        program_name.erase(0, last_slash_idx + 1);
-
-    // Options
-    cxxopts::Options options(program_name, "");
-    options.add_options()
-      ("h,help",      "Show this help")
-      ("c,cam",       "File nameCamera type: [seek|seekpro]", cxxopts::value<std::string>()->default_value("seekpro"))
-      ("s,smoothing", "Number of images to average before creating an output image", cxxopts::value<int>()->default_value("100"))
-      ("o,outfile",   "Name of the output file", cxxopts::value<std::string>()->default_value("ffield_output"))
-      ;
-    return options;
-}
+#include "args.h" // Parsing command line options
 
 int main(int argc, char** argv)
 {
+    // Setup arguments for parser
+    args::ArgumentParser parser("Seek Create Flat Field");
     // Options
-    cxxopts::Options options = generate_description(argv[0]);
-    bool help;
-    int smoothing;
-    std::string outfile;
-    std::string cam;
+    args::HelpFlag               help(parser, "help", "Display this help menu", {'h', "help"});
+    args::ValueFlag<std::string> _cam(parser, "cam", "File nameCamera type: [seek|seekpro]. (default: seekpro)", {'c', "cam"}, "seekpro");
+    args::ValueFlag<std::string> _outfile(parser, "outfile", "Name of the output file. (default: ffield_output)", {'o', "outfile"}, "ffield_output");
+    args::ValueFlag<int>         _smoothing(parser, "smoothing", "Number of images to average before creating an output image. (default: 100)", {'s', "smoothing"}, 100);
 
     // Seek
-    //cv::Mat frame_u16, frame, avg_frame;
+    cv::Mat frame_u16, frame, avg_frame;
     LibSeek::SeekThermalPro seekpro;
     LibSeek::SeekThermal seek;
     LibSeek::SeekCam* cam;
 
     try
     {
-        auto result = options.parse(argc, argv);
-        smoothing = result["smoothing"].as<int>();
-        outfile   = result["outfile"].as<std::string>();
-        help      = result["help"].as<bool>();
-        cam       = (result["cam"].as<std::string>() == "seekpro") ? &seekpro : &seek;
+        parser.ParseCLI(argc, argv);
     }
-    catch (cxxopts::OptionException &e)
+    catch (args::Help)
     {
-        std::cerr << "ERROR: " << e.what() << std::endl;
-        std::cout << options.help() << std::endl;
-        return -1;
-    }
-
-    if (help) {
-        std::cout << options.help() << std::endl;
+        std::cout << parser;
         return 0;
     }
+    catch (args::ParseError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+    catch (args::ValidationError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
 
+    cam = (args::get(_cam) == "seekpro") ? &seekpro : &seek;
     if (!cam->open()) {
         std::cout << "failed to open seek cam" << std::endl;
         return -1;
     }
 
+    int smoothing = args::get(_smoothing);
     for (int i=0; i<smoothing; i++) {
 
         if (!cam->grab()) {
@@ -87,6 +74,6 @@ int main(int argc, char** argv)
     avg_frame /= smoothing;
     avg_frame.convertTo(frame_u16, CV_16UC1);
 
-    cv::imwrite(outfile, frame_u16);
+    cv::imwrite(args::get(_outfile), frame_u16);
     return 0;
 }

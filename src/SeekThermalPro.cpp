@@ -5,7 +5,17 @@
 
 #include "SeekThermalPro.h"
 #include "SeekLogging.h"
-#include <endian.h>
+
+#ifdef _WIN32 || _WIN64
+ #define le16toh(x) (x)
+ #define le32toh(x) (x)
+ #define le64toh(x) (x)
+ #define htole16(x) (x)
+ #define htole32(x) (x)
+ #define htole64(x) (x)
+#else
+ #include <endian.h>
+#endif
 
 using namespace LibSeek;
 
@@ -144,4 +154,3 @@ int SeekThermalPro::frame_counter()
 {
     return m_raw_data[1];
 }
-
