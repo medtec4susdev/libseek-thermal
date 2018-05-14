@@ -16,7 +16,7 @@ SET(SOURCES
 
 INCLUDE_DIRECTORIES(
   ${OpenCV_INCLUDE_DIRS}
-  ${LIBUSB_INCLUDE_DIRS}
+  ${LibUSB_INCLUDE_DIRS}
 )
 
 ADD_LIBRARY(seek_static STATIC ${SOURCES} ${HEADERS})
@@ -24,7 +24,7 @@ ADD_LIBRARY(seek        SHARED ${SOURCES} ${HEADERS})
 
 TARGET_LINK_LIBRARIES(seek
   ${OpenCV_LIBS}
-  ${LIBUSB_LIBS}
+  ${LibUSB_LIBS}
 )
 
 # install library target and header files
@@ -41,8 +41,8 @@ INSTALL(
 # Copy DLLs to output/deps
 IF (INSTALL_DLL)
 
-  # LIBUSB
-  INSTALL(FILES ${LIBUSB_LIBRARY_DIR}/libusb-1.0.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  # LibUSB
+  INSTALL(FILES ${LibUSB_LIBRARY_DIR}/LibUSB-1.0.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
   # OpenCV
   FOREACH(lib ${OpenCV_LIBS})
@@ -73,3 +73,18 @@ IF (INSTALL_DLL)
   ENDFOREACH()
 
 ENDIF ()
+
+# Export the build configuration so that targets are made available
+export(TARGETS
+  seek seek_static
+  FILE "${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake"
+  )
+
+SET(SeekCameraLib_LIBRARIES seek)
+SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
+# Configure the dependency config file so downstream projects can use us from CMake
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
+  ${CMAKE_BINARY_DIR}/SeekCameraLibConfig.cmake
+  @ONLY
+  )
