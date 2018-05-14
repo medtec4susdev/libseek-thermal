@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     // Options
     args::HelpFlag               help(parser, "help", "Display this help menu", {'h', "help"});
     args::ValueFlag<std::string> _cam(parser, "cam", "File nameCamera type: [seek|seekpro]. (default: seekpro)", {'c', "cam"}, "seekpro");
-    args::ValueFlag<std::string> _outfile(parser, "outfile", "Name of the output file. (default: ffield_output)", {'o', "outfile"}, "ffield_output");
+    args::ValueFlag<std::string> _outfile(parser, "outfile", "Name of the output file. (default: ffield_output.png)", {'o', "outfile"}, "");
     args::ValueFlag<int>         _smoothing(parser, "smoothing", "Number of images to average before creating an output image. (default: 100)", {'s', "smoothing"}, 100);
 
     // Seek
@@ -45,7 +45,16 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    cam = (args::get(_cam) == "seekpro") ? &seekpro : &seek;
+    if (args::get(_outfile) == "") {
+      std::cout << "No output file specified.\n" << parser << std::endl;
+      return 1;
+    }
+
+    if (args::get(_cam) == "seekpro")
+        cam = &seekpro;
+    else
+        cam = &seek;
+
     if (!cam->open()) {
         std::cout << "failed to open seek cam" << std::endl;
         return -1;
