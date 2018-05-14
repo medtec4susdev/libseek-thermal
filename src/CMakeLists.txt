@@ -75,16 +75,16 @@ IF (INSTALL_DLL)
 ENDIF ()
 
 # Export the build configuration so that targets are made available
-export(TARGETS
-  seek seek_static
-  FILE "${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake"
-  )
-
-SET(SeekCameraLib_LIBRARIES seek)
-SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
-# Configure the dependency config file so downstream projects can use us from CMake
-CONFIGURE_FILE(
-  ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
-  ${CMAKE_BINARY_DIR}/SeekCameraLibConfig.cmake
-  @ONLY
-  )
+# export(TARGETS
+#   seek seek_static
+#   FILE "${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake"
+#   )
+#
+# SET(SeekCameraLib_LIBRARIES seek)
+# SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
+# # Configure the dependency config file so downstream projects can use us from CMake
+# CONFIGURE_FILE(
+#   ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
+#   ${CMAKE_BINARY_DIR}/SeekCameraLibConfig.cmake
+#   @ONLY
+#   )
