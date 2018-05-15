@@ -6,7 +6,7 @@
 #include "SeekThermalPro.h"
 #include "SeekLogging.h"
 
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
  #define le16toh(x) (x)
  #define le32toh(x) (x)
  #define le64toh(x) (x)
