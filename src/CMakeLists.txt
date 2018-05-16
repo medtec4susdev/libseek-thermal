@@ -1,70 +1,93 @@
-# Developed by MACBIOIDI-ULPGC & IACTEC-IAC group
-PROJECT(SeekCameraLib)
+SET(HEADERS
+  SeekCam.h
+  SeekDevice.h
+  seek.h
+  SeekLogging.h
+  SeekThermal.h
+  SeekThermalPro.h
+)
 
-SET(${PROJECT_NAME}_INCLUDE_DIRS
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  )
-
-SET(${PROJECT_NAME}_SRCS
+SET(SOURCES
   SeekCam.cpp
   SeekDevice.cpp
   SeekThermal.cpp
   SeekThermalPro.cpp
- )
+)
 
-SET(${PROJECT_NAME}_HDRS
-  seek.h
-  SeekCam.h
-  SeekDevice.h
-  SeekLogging.h
-  SeekThermal.h
-  SeekThermalPro.h
-  SeekCameraLibExport.h
+INCLUDE_DIRECTORIES(
+  ${OpenCV_INCLUDE_DIRS}
+  ${LibUSB_INCLUDE_DIRS}
+)
+
+ADD_LIBRARY(seek_static STATIC ${SOURCES} ${HEADERS})
+ADD_LIBRARY(seek        SHARED ${SOURCES} ${HEADERS})
+
+TARGET_LINK_LIBRARIES(seek
+  ${OpenCV_LIBS}
+  ${LibUSB_LIBS}
+)
+
+# install library target and header files
+INSTALL(
+  TARGETS seek seek_static
+  DESTINATION "bin"
   )
 
-# create library
-SET(LIB_TYPE STATIC)
-IF(BUILD_SHARED_LIBS)
-  SET(LIB_TYPE SHARED)
-ENDIF()
-ADD_LIBRARY(${PROJECT_NAME} ${LIB_TYPE} ${SeekCameraLib_SRCS} ${SeekCameraLib_HDRS})
-
-# add include directories in the build
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-
-# link libraries for new library
-target_link_libraries(${PROJECT_NAME} PUBLIC opencv_core opencv_imgcodecs LibUSB)
-if(WIN32)
-  target_link_libraries(${PROJECT_NAME} PUBLIC wsock32 ws2_32)
-endif()
-
-if (BUILD_SHARED_LIBS)
-  # Enable generation of .lib file in MSVC when compiling shared libraries
-  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_EXPORTS)
-else()
-  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_STATIC)
-endif()
-
-INSTALL(TARGETS ${PROJECT_NAME} EXPORT SeekCameraLib 
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION share
+INSTALL(
+  FILES ${HEADERS}
+  DESTINATION "include/seek"
   )
-INSTALL(FILES ${${PROJECT_NAME}_HDRS}
-  DESTINATION include
-  )
+
+# Copy DLLs to output/deps
+IF (INSTALL_DLL)
+
+  # LibUSB
+  IF (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    INSTALL(FILES ${LibUSB_LIBRARY_DIR}/LibUSB-1.0.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  ENDIF ()
+
+  # OpenCV
+  FOREACH(lib ${OpenCV_LIBS})
+      GET_TARGET_PROPERTY(_debug_file ${lib} IMPORTED_LOCATION_DEBUG)
+      GET_TARGET_PROPERTY(_release_file ${lib} IMPORTED_LOCATION_RELEASE)
+
+      IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
+        # Release
+        IF(EXISTS ${_release_file})
+          INSTALL(FILES ${_release_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+        ENDIF()
+        # Debug
+        IF(EXISTS ${_debug_file})
+          INSTALL(FILES ${_debug_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+        ENDIF()
+      ELSE()
+        IF(_debug_file EQUAL _release_file AND EXISTS ${_release_file})
+          INSTALL(FILES ${_release_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+        ELSE()
+          IF(EXISTS ${_release_file})
+            INSTALL(FILES ${_release_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+          ENDIF()
+          IF(EXISTS ${_debug_file})
+            INSTALL(FILES ${_debug_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+          ENDIF()
+        ENDIF()
+      ENDIF()
+  ENDFOREACH()
+
+ENDIF ()
 
 # Export the build configuration so that targets are made available
 export(TARGETS
-  SeekCameraLib
+  seek seek_static
   FILE "${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake"
   )
 
-SET(SeekCameraLib_LIBRARIES SeekCameraLib)
+SET(SeekCameraLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} ${OpenCV_INCLUDE_DIRS} ${LibUSB_INCLUDE_DIRS})
+SET(SeekCameraLib_SHARED_LIBRARIES seek)
+SET(SeekCameraLib_STATIC_LIBRARIES seek_static)
 SET(SeekCameraLib_TARGETS_FILE ${CMAKE_BINARY_DIR}/SeekCameraLibTargets.cmake)
 # Configure the dependency config file so downstream projects can use us from CMake
-CONFIGURE_FILE( 
+CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/SeekCameraLibConfig.cmake.in
   ${CMAKE_BINARY_DIR}/SeekCameraLibConfig.cmake
   @ONLY

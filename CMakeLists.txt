@@ -1,40 +1,40 @@
-project(LibSeekThermal)
-cmake_minimum_required(VERSION 3.3)
+PROJECT(libseek-thermal)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-option (BUILD_SHARED_LIBS "Select shared or static library build" ON)
-option (BUILD_EXAMPLES "Build the examples" OFF)
-option (WITH_ADDRESS_SANITIZER "Enable address sanitizer" OFF)
-option (WITH_DEBUG_VERBOSITY "Enable verbose stdout messages" OFF)
+# CMake variables
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED True)
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-# Request C++11 standard, using new CMake variables.
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_STANDARD_REQUIRED True)
+IF (MSVC)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+ELSE ()
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra") # MinGW
+ENDIF ()
 
-set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+# Options
+OPTION(WITH_ADDRESS_SANITIZER "Enable address sanitizer"                                                       OFF)
+OPTION(WITH_DEBUG_VERBOSITY   "Enable verbose stdout messages"                                                 OFF)
+OPTION(BUILD_EXAMPLES         "Build the examples"                                                             OFF)
+OPTION(INSTALL_DLL            "Copy DLL libs (OpenCV and LibUSB) to the output libs directory when installing" ON)
 
-IF(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-ENDIF()
-IF(NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-ENDIF()
-IF(NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-ENDIF()
+IF (WITH_DEBUG_VERBOSITY)
+  ADD_DEFINITIONS(-DSEEK_DEBUG)
+ENDIF ()
 
-if (WITH_DEBUG_VERBOSITY)
-  add_definitions(-DSEEK_DEBUG)
-endif ()
-
+# Build type
+INCLUDE(build_type)
+SET(default_build_type "Release")
 if (NOT MSVC)
-  message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+  MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 endif ()
 
-find_package (LibUSB REQUIRED)
-find_package (OpenCV REQUIRED NO_MODULE)
+# OpenCV
+FIND_PACKAGE(LIBUSB REQUIRED)
+FIND_PACKAGE(OpenCV REQUIRED NO_MODULE)
 
-add_subdirectory (src)
-
-if (BUILD_EXAMPLES)
-  add_subdirectory (examples)
-endif ()
+# CODE
+ADD_SUBDIRECTORY(src)
+IF (BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF ()

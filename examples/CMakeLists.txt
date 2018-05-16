@@ -1,23 +1,24 @@
-add_executable (seek_test seek_test.cpp)
-add_executable (seek_test_pro seek_test_pro.cpp)
-add_executable (seek_viewer seek_viewer.cpp args.h)
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_LIST_DIR}/../src
+  ${OpenCV_INCLUDE_DIRS}
+  ${LibUSB_INCLUDE_DIRS}
+)
 
-find_package(boost QUIET)
-if(boost_FOUND)
-  add_executable (seek_create_flat_field seek_create_flat_field.cpp)
-  target_link_libraries(seek_create_flat_field PUBLIC SeekCameraLib)
-  install (TARGETS seek_create_flat_field
-    DESTINATION bin
-    )
-endif()
+LINK_LIBRARIES(
+  seek_static
+  ${OpenCV_LIBS}
+  ${LibUSB_LIBS}
+)
 
-target_link_libraries(seek_test PUBLIC SeekCameraLib opencv_highgui)
-target_link_libraries(seek_test_pro PUBLIC SeekCameraLib opencv_highgui)
-target_link_libraries(seek_viewer PUBLIC SeekCameraLib opencv_highgui)
+ADD_EXECUTABLE(seek_test seek_test.cpp)
+ADD_EXECUTABLE(seek_test_pro seek_test_pro.cpp)
+ADD_EXECUTABLE(seek_viewer seek_viewer.cpp args.h)
+ADD_EXECUTABLE(seek_create_flat_field seek_create_flat_field.cpp)
 
-install (TARGETS
+INSTALL(TARGETS
   seek_test
   seek_test_pro
   seek_viewer
-  DESTINATION bin
+  seek_create_flat_field
+  DESTINATION "bin"
 )

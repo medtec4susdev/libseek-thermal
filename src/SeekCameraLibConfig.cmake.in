@@ -25,4 +25,5 @@ INCLUDE(@SeekCameraLib_TARGETS_FILE@)
 
 # Tell the user project where to find our headers and libraries
 SET(SeekCameraLib_INCLUDE_DIRS "@SeekCameraLib_INCLUDE_DIRS@")
-SET(SeekCameraLib_LIBRARIES "@SeekCameraLib_LIBRARIES@")
+SET(SeekCameraLib_SHARED_LIBRARIES "@SeekCameraLib_SHARED_LIBRARIES@")
+SET(SeekCameraLib_STATIC_LIBRARIES "@SeekCameraLib_STATIC_LIBRARIES@")
