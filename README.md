@@ -23,13 +23,12 @@ The code is based on ideas from the following repo's:
 * https://github.com/BjornVT/Masterproef.git
 * https://github.com/zougloub/libseek
 
-## Build
+## Build (Linux)
 
 Dependencies:
 * cmake
 * libopencv-dev (>= 2.4)
 * libusb-1.0-0-dev
-* libboost-program-options-dev
 
 NOTE: you can just 'apt-get install' all libs above
 
@@ -53,8 +52,7 @@ For more build options (debug/release, install prefix, opencv install dir, addre
 ```
 cmake-gui ../
 ```
-
-## Getting USB access
+## Getting USB access (Only Linux)
 
 You need to add a udev rule to be able to run the program as non root user:
 
@@ -76,6 +74,23 @@ sudo chmod 666 /dev/bus/usb/00x/00x
 
 with '00x' the usb bus found with the lsusb command
 
+## Build (Windows)
+*(Tested using VS2017, CMake 3.11.1, OpenCV 3.3.1 and OpenCV 2.4.1)*
+
+Dependencies:
+* cmake
+* opencv (>= 2.4)
+* libusb-1.0
+* WinUSB driver
+
+You can set the *OpenCV* directory with `OpenCV_DIR` and the *libusb-1.0* root directory with `LibUSB_ROOT_DIR`. The *libusb-1.0* windows binaries can be downloaded directly from its webpage https://libusb.info.
+
+If you do not have installed opencv as a package, *OpenCV* sources files can be downloaded from https://github.com/opencv/opencv/releases, then simply build the tarjets using CMake and pass the build directory to libseek-thermal through `OpenCV_DIR`.
+
+In order for *libusb-1.0* to connect to the infrared camera, the WinUSB driver must be installed to the device. We recommend using the *Zaing* tool that can be downloaded at http://zadig.akeo.ie.
+
+Note: Using the cmake-gui is recommended.
+
 ## Running example binaries
 
 ```
@@ -91,6 +106,8 @@ seek_test
 seek_test_pro
 seek_viewer
 ```
+
+Note: In Windows, the library will be installed in `%programfiles%/libseek-thermal`, if you want the library to be accesible from any point, you should add the `/bin` and `/lib` folders to the path.
 
 Some example command lines:
 
